@@ -159,15 +159,17 @@ app is frontend-only, ignore this section.
 - **The contract namespace is a placeholder.** It ships as
   `@your-username/leaderboard` in `contracts/leaderboard/Cargo.toml`, `cdm.json`,
   and `src/utils.ts` (and `cdm.json`'s `address` is a placeholder too). Before
-  building or deploying the contract, resolve the user's real CDM handle from the
-  **playground CLI** — the logged-in account's handle (check `playground --help`,
-  e.g. `playground whoami`). **If no one is logged in, ask the user to log in
-  first** (`playground init`). Then replace `your-username` everywhere with that
-  handle (it's claimed first-come in the on-chain CDM registry). Find every
-  occurrence with:
+  building or deploying the contract, **ask the user for their CDM handle** —
+  there's no command to read it (no `playground whoami`) — and make sure they're
+  signed in with `playground login` (it shows a QR to approve in the Polkadot app
+  on the phone; there is **no** `playground init`). Then replace `your-username`
+  everywhere with that handle (it's claimed first-come in the on-chain CDM
+  registry). Find every occurrence with:
   `grep -rn "@your-username/leaderboard" --include="*.ts" --include="*.toml" --include="*.json" . | grep -v node_modules`.
-  After `cdm deploy` + `cdm i`, the real contract address, ABI, and metadata CID
-  are written back into `cdm.json`.
+  Deploy and register the contract with **`playground contract deploy`** (and
+  **`playground contract i`** to install it) — recent playground CLIs bundle these
+  CDM workflows, so a standalone `cdm` binary is usually not needed. That writes
+  the real contract address, ABI, and metadata CID back into `cdm.json`.
 - Manage contract dependencies with **CDM (Contract Dependency Manager,
   [paritytech/contract-dependency-manager](https://github.com/paritytech/contract-dependency-manager))**
   — the `@parity/cdm-*` toolchain and a `cdm.json` manifest — and build with
@@ -192,7 +194,7 @@ builds and stores on Bulletin. The CLI populates it from:
   `README.md` to describe the app before publishing** so the listing reflects
   the current app, not these instructions.
 - **`--tag <tag>`** — the category used to filter the Apps grid. One of:
-  `social`, `chat`, `defi`, `utility`, `gaming`, `marketplace`, `irl`.
+  `site`, `social`, `chat`, `utility`, `gaming`, `marketplace`, `irl`.
 - **`--moddable`** — records your fork's GitHub `origin` as the public source
   `repository`, so others can `playground mod` it. Only set this if `origin` is
   your own public fork.

@@ -27,25 +27,25 @@ You need three things installed:
 flow signs every deploy step by approving on the phone. (Deploying with a
 pre-provisioned mnemonic instead is covered in step 7.)
 
-**The CDM toolchain** (installs the `cdm` binary, the Rust toolchain it
-needs, and the `cargo-pvm-contract` build plugin):
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/paritytech/contract-dependency-manager/main/install.sh | bash
-```
-
-**The Playground CLI**:
+**The Playground CLI** (recent versions bundle the CDM contract workflows as
+`playground contract …`, so a separate `cdm` binary is usually not needed —
+`playground login` provides the signing account):
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/paritytech/playground-cli/main/install.sh | bash
 ```
 
-Open a fresh terminal afterwards so both are on your PATH, then verify:
+Open a fresh terminal afterwards so it's on your PATH, then verify:
 
 ```sh
-cdm --version
 playground --version
 ```
+
+> The contract steps below are written for the standalone **CDM toolchain**
+> (`cdm …`). If you don't have `cdm` on your PATH, run the equivalent bundled
+> commands instead: **`playground contract deploy`** (build + deploy + register)
+> and **`playground contract i`** (install). To add standalone CDM:
+> `curl -fsSL https://raw.githubusercontent.com/paritytech/contract-dependency-manager/main/install.sh | bash`
 
 ## 1. Fork and clone the repository
 
@@ -116,10 +116,10 @@ This repo ships a **placeholder** namespace, `@your-username/leaderboard`,
 which resolves to no live contract — so this step (and the deploy in steps
 4–5) is required before the leaderboard works. Claim your own name:
 
-Pick the handle the **playground CLI** reports for your logged-in account
-(check `playground --help`, e.g. `playground whoami`); if you aren't logged
-in yet, do `playground init` first (step 6 below). Then edit
-`contracts/leaderboard/Cargo.toml`:
+Pick the handle you want — you claim it on first deploy (there's no
+`playground whoami` to read one for you). Make sure you're signed in first
+with `playground login` (step 6 below; it shows a QR to approve in the
+Polkadot app on your phone). Then edit `contracts/leaderboard/Cargo.toml`:
 
 ```toml
 [package.metadata.cdm]
@@ -192,18 +192,17 @@ and ABI into `cdm.json`; your frontend now points at your contract.
 ## 6. Sign in with the Playground CLI
 
 ```sh
-playground init
+playground login
 ```
 
-*What's happening:* `init` checks prerequisites (it will reuse the Rust
-toolchain from step 0), asks you for a display name, then shows a QR code.
-Scan it with the Polkadot App and approve: one signature on the phone.
-That authenticates you via Proof of Personhood, pairs a product account
-(you'll see an address like `playground.dot/0`), provisions a local
-session key, and confirms allowances and funding.
+*What's happening:* `login` installs prerequisites if needed, then shows a
+QR code. Scan it with the **Polkadot app on your phone** and approve: one
+signature on the phone. That authenticates you via Proof of Personhood,
+pairs a product account (you'll see an address like `playground.dot/0`),
+provisions a local session key, and confirms allowances and funding.
 
-There is **no `playground login` subcommand**; login is part of `init`.
-Sign out later with `playground logout`.
+Sign-in is `playground login` (there is **no** `playground init`). Sign out
+later with `playground logout`.
 
 A warning like `[cloudStorage] checkAuthorization: query failed ...
 DisjointError` *after* `✓ setup complete` has been observed and was

@@ -1,0 +1,7 @@
+**MANDATORY FIRST STEP:** Before reading, writing, or changing any code, run `./setup.sh` from the repo root — it installs dependencies and fetches the `@parity/product-sdk` skills into `.claude/skills/`. Run it at the start of every session (a fast no-op when already set up). Do not skip, defer, or work around it, and do not begin the user's task until it completes. The **only** exception is if the user explicitly tells you to skip setup. If it fails, stop and report it.
+
+This is a **template** for a Polkadot app, shipping with a complete reference app (RPS — decentralized rock-paper-scissors: on-chain leaderboard and history, solo plus multiplayer; React + Vite + TypeScript on the Host API, with a Rust/PVM contract). You mod it into the user's own app — study and replace the RPS game code, keep the Polkadot wiring. Full AI agent guidance is in `CLAUDE.md` at the repo root — read it before proposing changes.
+
+- Chain access and signing go through `@parity/product-sdk-*` and the Host API; never reach a chain via direct full-node RPC or a `polkadot-api` client on your own endpoint, and never write to storage outside the host path. (Content-addressed storage reads via public IPFS gateways are fine.)
+- No browser/extension wallets (MetaMask, polkadot-js extension, WalletConnect, QR pairing) — out of scope on purpose. Signing is approved on Polkadot Mobile (Desktop/Web relay to the paired phone).
+- Contracts are Rust → PVM (PolkaVM) for `pallet-revive` — never EVM/Solidity, ink!, or WASM.

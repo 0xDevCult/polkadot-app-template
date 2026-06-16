@@ -1,0 +1,27 @@
+node_modules/
+dist/
+target/
+*.tsbuildinfo
+.cdm/
+Cargo.lock
+package-lock.json
+.claude/skills/
+quests.json
+.DS_Store
+
+# Env files (keep the bare .env covered; allow-list the example)
+.env*
+!.env.example
+
+# AI tool session / local state
+.claude/sessions/
+.claude/cache/
+**/settings.local.json
+.cursor/
+.aider*
+.codeium/
+.dot-mod-setup.log
+.dot-mod-source.log
+
+# Playground deploy / mod lineage artifact (regenerated per deploy)
+dot.json

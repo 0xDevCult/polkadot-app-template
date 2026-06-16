@@ -144,8 +144,18 @@ Done when: a player can finish a word (solved or lost) and see the result on the
 
 ## Deploying your own copy
 
-`/deploy <name>` handles the common path. To deploy your **own contract, own
-`.dot` name, and a moddable fork** from scratch (forking, funding, CDM,
+First, **sign in to the Playground CLI with your phone:**
+
+```
+playground login
+```
+
+This shows a QR code — scan and approve it in the **Polkadot app on your phone**.
+That pairs your account so deploys can be signed from the phone. (Sign-in is
+`playground login`, not `playground init`.)
+
+Then `/deploy <name>` handles the common path. To deploy your **own contract, own
+`.dot` name, and a moddable fork** from scratch (forking, funding, contract +
 Playground CLI), follow the step-by-step [DEPLOYMENT.md](./DEPLOYMENT.md).
 
 > Your account needs PAS tokens on Asset Hub

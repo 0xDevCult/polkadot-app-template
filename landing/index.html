@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Polkadot App Template — describe it, your agent ships it</title>
+<meta name="description" content="A ready-to-mod Polkadot app. Open it in Claude Code, describe your idea, and your AI agent installs everything, builds it, and deploys it to a .dot domain." />
+<link rel="icon" type="image/png" href="https://devcult.io/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0B0B12;
+    --ink-2: #100F1A;
+    --panel: #161522;
+    --panel-2: #1D1B2E;
+    --line: rgba(255,255,255,.09);
+    --line-strong: rgba(255,255,255,.16);
+    --pink: #fa7d35;
+    --pink-soft: #ff9e5e;
+    --violet: #ff6a02;
+    --grad: linear-gradient(100deg, #ff8d29 0%, #ff6a02 50%, #ff8d29 100%);
+    --cyan: #16E0C0;
+    --text: #F4F3F8;
+    --muted: #A6A4BA;
+    --faint: #6E6C82;
+    --radius: 14px;
+    --maxw: 1080px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--text);
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--pink); color: #fff; }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12.5px;
+    letter-spacing: .04em;
+    text-transform: lowercase;
+    color: var(--pink-soft);
+    margin: 0 0 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .eyebrow::before { content: "▸"; color: var(--pink); }
+
+  h1, h2, h3 { font-family: "Unbounded", "Inter", sans-serif; line-height: 1.08; margin: 0; }
+  .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  /* ---------- nav ---------- */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(12px);
+    background: color-mix(in srgb, var(--ink) 78%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-in { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 11px; font-family: "Unbounded"; font-weight: 800; font-size: 16px; letter-spacing: -.01em; }
+  .dot { width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 32% 30%, var(--pink-soft), var(--pink)); box-shadow: 0 0 18px rgba(250,125,53,.5); }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .nav-link { font-size: 14px; color: var(--muted); text-decoration: none; padding: 9px 15px; border: 1px solid var(--line-strong); border-radius: 999px; transition: .18s; }
+  .nav-link:hover { color: var(--text); border-color: var(--pink); }
+
+  /* ---------- hero ---------- */
+  .hero { position: relative; padding: 76px 0 40px; }
+  .hero::before {
+    content: ""; position: absolute; inset: -10% -20% auto -20%; height: 520px; z-index: -1;
+    background: radial-gradient(60% 70% at 22% 0%, rgba(250,125,53,.20), transparent 70%),
+               radial-gradient(50% 60% at 90% 10%, rgba(255,106,2,.18), transparent 70%);
+    pointer-events: none;
+  }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; }
+  .hero h1 { font-size: clamp(34px, 5.4vw, 58px); font-weight: 800; letter-spacing: -.02em; }
+  .hero p.lede { font-size: clamp(16px, 1.9vw, 19px); color: var(--muted); margin: 22px 0 0; max-width: 30em; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
+  .btn { font-family: "Inter"; font-weight: 600; font-size: 15px; text-decoration: none; padding: 13px 22px; border-radius: 999px; display: inline-flex; align-items: center; gap: 9px; transition: .18s; border: 1px solid transparent; }
+  .btn-primary { background: var(--grad); color: #fff; box-shadow: 0 8px 30px rgba(250,125,53,.35); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 38px rgba(250,125,53,.45); }
+  .btn-ghost { border-color: var(--line-strong); color: var(--text); }
+  .btn-ghost:hover { border-color: var(--pink); }
+
+  /* ---------- terminal (signature) ---------- */
+  .term { background: linear-gradient(180deg, var(--panel-2), var(--panel)); border: 1px solid var(--line-strong); border-radius: 16px; box-shadow: 0 30px 80px rgba(0,0,0,.55); overflow: hidden; }
+  .term-bar { display: flex; align-items: center; gap: 8px; padding: 13px 16px; border-bottom: 1px solid var(--line); background: rgba(0,0,0,.25); }
+  .tl { width: 11px; height: 11px; border-radius: 50%; background: #3a3850; }
+  .tl.r { background: #ff5f57; } .tl.y { background: #febc2e; } .tl.g { background: #28c840; }
+  .term-title { margin-left: 8px; font-family: "JetBrains Mono"; font-size: 12px; color: var(--faint); }
+  .term-body { font-family: "JetBrains Mono", monospace; font-size: 13.3px; line-height: 1.85; padding: 20px 20px 24px; min-height: 360px; }
+  .ln { display: block; white-space: pre-wrap; }
+  .ln.dim { color: var(--faint); }
+  .ln.cmd { color: var(--text); }
+  .ln.cmd .p { color: var(--pink); font-weight: 700; }
+  .ln.out { color: var(--cyan); }
+  .ln.out .ok { color: #6ee7a8; }
+  .ln.note { color: var(--muted); }
+  .ln.win { color: #fff; font-weight: 700; }
+  .ln.win .url { color: var(--pink-soft); }
+  .reveal { opacity: 0; transform: translateY(4px); }
+  .reveal.show { opacity: 1; transform: none; transition: opacity .25s ease, transform .25s ease; }
+  .cursor { display: inline-block; width: 8px; height: 15px; background: var(--cyan); margin-left: 2px; vertical-align: -2px; animation: blink 1.05s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ---------- sections ---------- */
+  .section { padding: 64px 0; border-top: 1px solid var(--line); }
+  .section h2 { font-size: clamp(24px, 3.2vw, 34px); font-weight: 800; letter-spacing: -.01em; }
+  .section .sub { color: var(--muted); margin: 14px 0 0; max-width: 46em; }
+
+  /* steps */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 40px; }
+  .step { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; position: relative; }
+  .step .k { font-family: "JetBrains Mono"; font-size: 12px; color: var(--pink); }
+  .step h3 { font-family: "Inter"; font-weight: 700; font-size: 18px; margin: 12px 0 8px; letter-spacing: -.01em; }
+  .step p { color: var(--muted); font-size: 14.5px; margin: 0; }
+  .step code { font-family: "JetBrains Mono"; font-size: .9em; color: var(--text); background: rgba(250,125,53,.13); padding: 1px 6px; border-radius: 5px; }
+
+  /* agent callout */
+  .callout { margin-top: 36px; border: 1px solid var(--line-strong); border-radius: var(--radius); padding: 26px 28px; background:
+      linear-gradient(100deg, rgba(250,125,53,.10), rgba(255,106,2,.08)); display: flex; gap: 18px; align-items: flex-start; }
+  .callout .mark { font-size: 22px; line-height: 1.3; }
+  .callout p { margin: 0; font-size: 16px; }
+  .callout strong { color: var(--text); }
+  .callout span { color: var(--muted); }
+
+  /* idea pool */
+  .pool { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 38px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; transition: .18s; }
+  .card:hover { border-color: var(--line-strong); transform: translateY(-3px); }
+  .card .emoji { font-size: 22px; }
+  .card h3 { font-family: "Inter"; font-weight: 700; font-size: 16.5px; margin: 12px 0 6px; letter-spacing: -.01em; }
+  .card .gist { color: var(--muted); font-size: 14px; margin: 0 0 16px; flex: 1; }
+  .card .tag { font-family: "JetBrains Mono"; font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); }
+  .copy { margin-top: auto; font-family: "JetBrains Mono"; font-size: 12.5px; font-weight: 500; color: var(--text); background: rgba(255,255,255,.04); border: 1px solid var(--line-strong); border-radius: 9px; padding: 9px 12px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 8px; transition: .15s; width: 100%; }
+  .copy:hover { border-color: var(--pink); background: rgba(250,125,53,.10); }
+  .copy.done { border-color: #6ee7a8; color: #6ee7a8; }
+  .copy .glyph { color: var(--pink); } .copy.done .glyph { color: #6ee7a8; }
+
+  /* wired-up features */
+  .feat { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 38px; }
+  .f { padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--ink-2); }
+  .f .fi { font-family: "JetBrains Mono"; color: var(--pink); font-size: 13px; }
+  .f h3 { font-family: "Inter"; font-weight: 600; font-size: 16px; margin: 10px 0 6px; }
+  .f p { color: var(--muted); font-size: 14px; margin: 0; }
+
+  /* tips */
+  .tips { margin: 36px 0 0; padding: 0; list-style: none; display: grid; gap: 14px; }
+  .tips li { padding-left: 30px; position: relative; color: var(--muted); }
+  .tips li::before { content: "$"; position: absolute; left: 0; top: 0; font-family: "JetBrains Mono"; color: var(--pink); font-weight: 700; }
+  .tips strong { color: var(--text); font-weight: 600; }
+  .tips code { font-family: "JetBrains Mono"; font-size: .88em; color: var(--text); background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 5px; }
+
+  /* footer */
+  footer { border-top: 1px solid var(--line); padding: 50px 0 60px; }
+  .foot-grid { display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: center; }
+  .foot-links { display: flex; flex-wrap: wrap; gap: 22px; }
+  .foot-links a { color: var(--muted); text-decoration: none; font-size: 14px; }
+  .foot-links a:hover { color: var(--pink-soft); }
+  .disclaimer { color: var(--faint); font-size: 12.5px; margin-top: 26px; max-width: 60em; }
+
+  :focus-visible { outline: 2px solid var(--pink-soft); outline-offset: 3px; border-radius: 4px; }
+
+  @media (max-width: 860px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 36px; }
+    .steps, .pool, .feat { grid-template-columns: 1fr; }
+    .hero { padding-top: 48px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; }
+    .cursor { animation: none; }
+    .btn-primary:hover, .card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <div class="brand"><span class="dot"></span> Polkadot App Template</div>
+    <div class="nav-right">
+      <a class="nav-link" href="https://devcult.io" target="_blank" rel="noopener">DevCult ↗</a>
+      <a class="nav-link" href="https://github.com/0xDevCult/polkadot-app-template" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">a template you mod with an agent</span>
+      <h1>Describe your app.<br><span class="grad">Your agent ships it</span> on Polkadot.</h1>
+      <p class="lede">A ready-to-mod app with the on-chain leaderboard, decentralized storage, and mobile signing already wired up. Open it in Claude Code, say what you want, and the agent builds and deploys it to a <code style="font-family:'JetBrains Mono';color:var(--pink-soft)">.dot</code> domain.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/0xDevCult/polkadot-app-template" target="_blank" rel="noopener">Start building →</a>
+        <a class="btn btn-ghost" href="#ideas">Browse ideas</a>
+      </div>
+    </div>
+
+    <div class="term" role="img" aria-label="A terminal session: typing /goal builds a Snake game, and /deploy ships it live to a .dot domain — the agent installs prerequisites and runs the deploy.">
+      <div class="term-bar"><span class="tl r"></span><span class="tl y"></span><span class="tl g"></span><span class="term-title">claude — ~/snake-arcade</span></div>
+      <div class="term-body" id="term" aria-hidden="true">
+        <span class="ln cmd reveal"><span class="p">&gt; /goal</span> Build a Snake game with an on-chain high-score leaderboard</span>
+        <span class="ln dim reveal">&nbsp;</span>
+        <span class="ln out reveal">● installing Node deps + Polkadot SDK skills… <span class="ok">✓</span></span>
+        <span class="ln out reveal">● brainstorming the game loop + what to keep from the demo</span>
+        <span class="ln out reveal">● building: grid &amp; controls · score → leaderboard · run → storage</span>
+        <span class="ln out reveal">● reviewing for Polkadot conventions <span class="ok">✓</span></span>
+        <span class="ln note reveal">  preview ready → localhost:5173</span>
+        <span class="ln dim reveal">&nbsp;</span>
+        <span class="ln cmd reveal"><span class="p">&gt; /deploy</span> snake-arcade</span>
+        <span class="ln out reveal">● building · uploading to Bulletin · registering snake-arcade.dot</span>
+        <span class="ln note reveal">  approve the requests on your phone 📱 <span class="ok">✓</span></span>
+        <span class="ln win reveal">✓ live at <span class="url">snake-arcade.dot.li</span><span class="cursor"></span></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- STEPS -->
+  <section class="section" id="start">
+    <div class="wrap">
+      <span class="eyebrow">start building</span>
+      <h2>Three steps. No local setup.</h2>
+      <p class="sub">You bring an idea. The agent brings everything else.</p>
+
+      <div class="steps">
+        <div class="step">
+          <span class="k">step 01</span>
+          <h3>Open it in Claude Code</h3>
+          <p>Open the repo and pick the Sonnet&nbsp;4.6 model. There's nothing to install first — the agent pulls Node, the SDK, and the deploy tools as it works.</p>
+        </div>
+        <div class="step">
+          <span class="k">step 02</span>
+          <h3>Run <code>/goal</code> with your idea</h3>
+          <p>Describe the app in a sentence. The agent brainstorms it, plans it, builds it, and shows you a live preview — one feature at a time.</p>
+        </div>
+        <div class="step">
+          <span class="k">step 03</span>
+          <h3>Ship it with <code>/deploy</code></h3>
+          <p>The agent builds, uploads to decentralized storage, and registers your <code>.dot</code> name. You just approve the deploy on your phone.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <span class="mark">🤖</span>
+        <p><strong>You never touch a package manager or a deploy script.</strong> <span>Agents install every prerequisite and run the deployment themselves — you describe the outcome you want, they handle the machinery and hand back a live URL.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- IDEA POOL -->
+  <section class="section" id="ideas">
+    <div class="wrap">
+      <span class="eyebrow">idea pool</span>
+      <h2>Some inspiration? Paste it into <span class="grad">/goal</span>.</h2>
+      <p class="sub">Each one reuses the on-chain leaderboard and storage that ship with the template. Copy it, drop it in, and let the agent take it from there.</p>
+
+      <div class="pool" id="pool"><!-- cards injected --></div>
+    </div>
+  </section>
+
+  <!-- WIRED UP -->
+  <section class="section">
+    <div class="wrap">
+      <span class="eyebrow">what's wired up</span>
+      <h2>Who said blockchain engineering?</h2>
+      <p class="sub">The repo has everything you need and a tested agentic harness. Just ship.</p>
+
+      <div class="feat">
+        <div class="f"><div class="fi">// host api</div><h3>Accounts &amp; signing</h3><p>Login and on-device approval through the Polkadot host — no browser wallets, no key handling in the app.</p></div>
+        <div class="f"><div class="fi">// product-sdk</div><h3>Chain &amp; storage</h3><p>Reads, writes, and decentralized file storage through <code>@parity/product-sdk</code> — never a raw node endpoint.</p></div>
+        <div class="f"><div class="fi">// contract</div><h3>On-chain leaderboard</h3><p>A Rust → PolkaVM contract scaffold and a CDM manifest, ready to deploy under your own name.</p></div>
+        <div class="f"><div class="fi">// commands</div><h3>/goal · /dev · /deploy</h3><p>Build, preview, and publish slash-commands the agent drives end to end.</p></div>
+        <div class="f"><div class="fi">// subagents</div><h3>Built-in reviewer</h3><p>Fast Haiku subagents build scoped changes and check every diff against the Polkadot conventions.</p></div>
+        <div class="f"><div class="fi">// skills</div><h3>SDK knowledge on tap</h3><p>Per-package SDK guides are fetched into the project so the agent codes against the real API, not guesses.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIPS -->
+  <section class="section">
+    <div class="wrap">
+      <span class="eyebrow">prompt like a pro</span>
+      <h2>Get more from every <span class="grad">/goal</span>.</h2>
+      <ul class="tips">
+        <li>Lead with <code>/goal</code> and one clear sentence, then let the agent ask the follow-ups.</li>
+        <li><strong>Say what to keep and what to change</strong> — e.g. keep the leaderboard and storage, swap the game.</li>
+        <li>Build one feature at a time and preview with <code>/dev</code> between changes.</li>
+        <li>If the agent ever reaches for a browser wallet or a direct RPC URL, that's wrong for this template — tell it to use the Host API.</li>
+        <li><strong>Rewrite the README to describe your app before <code>/deploy</code></strong> — it becomes your app's public detail page.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="brand"><span class="dot"></span> Polkadot App Template</div>
+      <div class="foot-links">
+        <a href="https://github.com/0xDevCult/polkadot-app-template" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/0xDevCult/polkadot-app-template/blob/main/DEPLOYMENT.md" target="_blank" rel="noopener">Deploy guide</a>
+        <a href="https://github.com/0xDevCult/polkadot-app-template/blob/main/LICENSE" target="_blank" rel="noopener">GPL-3.0</a>
+      </div>
+    </div>
+    <p class="disclaimer">A prototype and reference implementation for research, experimentation, and developer education. Not audited; use at your own risk. Built to be modded — fork it, point your agent at it, and make it your own.</p>
+  </div>
+</footer>
+
+<script>
+  // Idea pool — title, gist, tag, and the full /goal prompt to copy.
+  const IDEAS = [
+    { e:"💸", t:"Tipping jar", tag:"app", g:"Take PAS tips with a live feed and running total.",
+      p:`/goal Build a tipping jar. Visitors connect through the Host API and send a PAS tip — preset amounts plus a custom field — to my address, optionally with a short thank-you message. Show a live feed of recent tips and a running total raised.\nKeep RPS's wiring: record each tip on-chain via the contract and store the message on Bulletin; signing stays on Polkadot Mobile. No browser wallets, no direct RPC.\nDone when: a connected user can send a tip, see it confirm, and watch the feed and total update.` },
+    { e:"🗳️", t:"Decentralized poll", tag:"app", g:"One vote per account, live tally, on-chain results.",
+      p:`/goal Build a decentralized poll app. A creator posts a question with 2–4 options; any connected account can vote once, and results tally live with vote counts and percentages. Closed polls stay viewable as final results.\nKeep RPS's wiring: store the poll on Bulletin and keep votes and tallies on-chain via the contract; enforce one vote per account; signing on Polkadot Mobile. No browser wallets, no direct RPC.\nDone when: a user can create a poll, share it, vote once, and see the live tally update.` },
+    { e:"🧾", t:"Group expense splitter", tag:"app", g:"Log shared costs, compute who owes whom, settle up.",
+      p:`/goal Build a group expense splitter. Members of a group log shared expenses (who paid, the amount, who shares it); the app computes net balances — who owes whom — and lets people record a settle-up payment.\nKeep RPS's wiring: store the expense log on Bulletin and keep balances and settlements on-chain via the contract; signing on Polkadot Mobile. No browser wallets, no direct RPC.\nDone when: a group can add expenses, see correct net balances, and record a settle-up that updates them.` },
+    { e:"⭕", t:"Tic-tac-toe vs a bot", tag:"game", g:"Beat an easy bot; results hit the leaderboard.",
+      p:`/goal Replace the RPS game with tic-tac-toe against an easy bot that plays random legal moves. Player is X and moves first; detect wins, draws, and a full board, and offer a rematch.\nKeep RPS's wiring untouched: each finished game updates the player's score on the on-chain leaderboard and stores the match history on Bulletin, exactly like RPS; signing on Polkadot Mobile. No browser wallets, no direct RPC.\nDone when: a player can finish a game against the bot and see their score change on the leaderboard.` },
+    { e:"🐤", t:"Flappy-bird-style", tag:"game", g:"Tap to flap, dodge pipes, post your score.",
+      p:`/goal Replace the RPS game with a Flappy-Bird-style game: tap or press space to flap, gravity pulls down, dodge scrolling pipe gaps, score one point per pipe passed, game over on collision. Show the score live and a game-over screen with restart.\nKeep RPS's wiring: when a run ends, submit the score to the on-chain leaderboard and store the run summary on Bulletin, reusing RPS's pattern; signing on Polkadot Mobile. No browser wallets, no direct RPC.\nDone when: a player can play a run, crash, and see their best score on the leaderboard.` },
+    { e:"🐍", t:"Snake", tag:"game", g:"Eat, grow, don't crash — high scores on-chain.",
+      p:`/goal Replace the RPS game with Snake: arrow keys steer a snake on a grid, eating food grows it and scores a point, the game ends on a wall or self collision. Speed up slightly as the snake grows; show the score live.\nKeep RPS's wiring: on game over, record the score on the on-chain leaderboard and store the run on Bulletin, like RPS; signing on Polkadot Mobile. No browser wallets, no direct RPC.\nDone when: a player can play a full run and see their score on the leaderboard.` },
+    { e:"👾", t:"Pac-man-style maze", tag:"game", g:"Clear the dots, dodge ghosts, score per run.",
+      p:`/goal Replace the RPS game with a Pac-Man-style maze game: steer with arrow keys to collect every dot while avoiding two or three simple chasing ghosts; clearing the maze wins, getting caught ends the run. Score per dot; show score and lives.\nKeep RPS's wiring: submit each run's score to the on-chain leaderboard and store the run on Bulletin, reusing RPS's pattern; signing on Polkadot Mobile. No browser wallets, no direct RPC.\nDone when: a player can clear or lose a maze and see their score on the leaderboard.` },
+    { e:"🚢", t:"Battleship vs a bot", tag:"game", g:"Sink the fleet; win/loss recorded on-chain.",
+      p:`/goal Replace the RPS game with Battleship against a simple bot: place your ships on a grid, then take turns firing; the bot fires randomly but hunts adjacent cells after a hit. Track hits and misses and declare a winner when one fleet is sunk.\nKeep RPS's wiring: on finishing, record the win or loss on the on-chain leaderboard and store the match on Bulletin, like RPS; signing on Polkadot Mobile. No browser wallets, no direct RPC.\nDone when: a player can finish a match against the bot and see the result on the leaderboard.` },
+    { e:"🔤", t:"Hangman", tag:"game", g:"Guess the word before the misses run out.",
+      p:`/goal Replace the RPS game with Hangman: pick a random word from a word list, the player guesses letters with a limited number of misses, revealing correct letters until they solve it or run out. Show the masked word, used letters, and misses left.\nKeep RPS's wiring: record each result (win or loss) on the on-chain leaderboard and store the game on Bulletin, reusing RPS's wiring; signing on Polkadot Mobile. No browser wallets, no direct RPC.\nDone when: a player can finish a word (solved or lost) and see the result on the leaderboard.` },
+  ];
+
+  const pool = document.getElementById("pool");
+  IDEAS.forEach(function (i) {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML =
+      '<div class="emoji">' + i.e + '</div>' +
+      '<span class="tag">' + i.tag + '</span>' +
+      '<h3>' + i.t + '</h3>' +
+      '<p class="gist">' + i.g + '</p>' +
+      '<button class="copy" type="button"><span>Copy /goal prompt</span><span class="glyph">⧉</span></button>';
+    const btn = card.querySelector(".copy");
+    btn.addEventListener("click", function () {
+      navigator.clipboard.writeText(i.p).then(function () {
+        btn.classList.add("done");
+        btn.querySelector("span").textContent = "Copied to clipboard";
+        btn.querySelector(".glyph").textContent = "✓";
+        setTimeout(function () {
+          btn.classList.remove("done");
+          btn.querySelector("span").textContent = "Copy /goal prompt";
+          btn.querySelector(".glyph").textContent = "⧉";
+        }, 1800);
+      });
+    });
+    pool.appendChild(card);
+  });
+
+  // Terminal: reveal lines in sequence unless reduced motion is requested.
+  (function () {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const lines = Array.prototype.slice.call(document.querySelectorAll("#term .reveal"));
+    if (reduce) { lines.forEach(function (l) { l.classList.add("show"); }); return; }
+    let d = 120;
+    lines.forEach(function (l) {
+      const cmd = l.classList.contains("cmd");
+      setTimeout(function () { l.classList.add("show"); }, d);
+      d += cmd ? 300 : 170;
+    });
+  })();
+</script>
+</body>
+</html>

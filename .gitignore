@@ -25,6 +25,7 @@ quests.json
 
 # Playground deploy / mod lineage artifact (regenerated per deploy)
 dot.json
+.bulletin-deploy/
 
 # Deploy artifacts / debug logs
 *.car

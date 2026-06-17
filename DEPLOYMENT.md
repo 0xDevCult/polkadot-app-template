@@ -21,31 +21,50 @@ install and the first Rust build.
 
 ## 0. Prerequisites
 
-You need three things installed:
+**The Polkadot App on your phone**, with an account created — every deploy step
+is approved on the phone. (Deploying with a pre-provisioned mnemonic instead is
+covered in step 7.)
 
-**The Polkadot App on your phone**, with an account created. The standard
-flow signs every deploy step by approving on the phone. (Deploying with a
-pre-provisioned mnemonic instead is covered in step 7.)
+**Two CLIs**, plus the system deps they build against:
 
-**The Playground CLI** (recent versions bundle the CDM contract workflows as
-`playground contract …`, so a separate `cdm` binary is usually not needed —
-`playground login` provides the signing account):
+- **Playground CLI** — deploys the frontend, registers the `.dot` name, publishes
+  to the playground ([repo](https://github.com/paritytech/playground-cli)).
+- **CDM CLI** — builds and deploys the Rust→PVM contract and registers it
+  ([repo](https://github.com/paritytech/contract-dependency-manager)).
+
+The fast path is the bundled installer — it sets everything up in the right order
+(a C toolchain → Rust → both CLIs) and is safe to re-run:
+
+```sh
+./scripts/install-deploy-tools.sh
+```
+
+To do it by hand, install the **system deps first**. Both CLI installers build
+Rust components, so they need a C compiler/linker and `curl` present — without
+`cc` the Rust step stalls on the linker or rustup:
+
+```sh
+# Debian/Ubuntu
+sudo apt-get update && sudo apt-get install -y build-essential curl
+# Arch:   sudo pacman -Sy --needed base-devel curl
+# Fedora: sudo dnf install -y gcc make curl
+# macOS:  xcode-select --install
+```
+
+Then the two CLIs:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/paritytech/playground-cli/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/paritytech/contract-dependency-manager/main/install.sh | bash
 ```
 
-Open a fresh terminal afterwards so it's on your PATH, then verify:
+Open a fresh terminal afterwards (binaries land in `~/.polkadot/bin` and
+`~/.cargo/bin`), then verify:
 
 ```sh
 playground --version
+cdm --version
 ```
-
-> The contract steps below are written for the standalone **CDM toolchain**
-> (`cdm …`). If you don't have `cdm` on your PATH, run the equivalent bundled
-> commands instead: **`playground contract deploy`** (build + deploy + register)
-> and **`playground contract i`** (install). To add standalone CDM:
-> `curl -fsSL https://raw.githubusercontent.com/paritytech/contract-dependency-manager/main/install.sh | bash`
 
 ## 1. Fork and clone the repository
 

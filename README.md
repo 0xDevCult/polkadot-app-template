@@ -144,7 +144,11 @@ Done when: a player can finish a word (solved or lost) and see the result on the
 
 ## Deploying your own copy
 
-First, **sign in to the Playground CLI with your phone:**
+Deploying needs two CLIs — the **Playground CLI** and the **CDM CLI**. Your agent
+installs them for you; to set them up by hand, run `./scripts/install-deploy-tools.sh`
+(it installs a C toolchain, Rust, and both CLIs). They aren't needed for `/dev`.
+
+Then **sign in to the Playground CLI with your phone:**
 
 ```
 playground login

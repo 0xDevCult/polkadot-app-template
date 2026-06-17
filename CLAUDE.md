@@ -148,6 +148,45 @@ hand-rolling SDK usage.**
 > wiped. Template-owned tooling lives in `.claude/commands/`, `.claude/agents/`,
 > and `.claude/memory/`, which are committed and setup-safe.
 
+## Deploy prerequisites
+
+`./setup.sh` covers **build and preview** only (npm deps + the SDK skills) — it
+does not install the deploy CLIs. **Deploying** (`/deploy`, and contract work)
+needs two more CLIs. They are **not** required for `/dev`.
+
+| Tool | What it does | Repo |
+|------|--------------|------|
+| **Playground CLI** | deploys the frontend, registers the `.dot` domain, publishes to the playground | [paritytech/playground-cli](https://github.com/paritytech/playground-cli) |
+| **CDM CLI** | builds/deploys the Rust→PVM contract and registers it | [paritytech/contract-dependency-manager](https://github.com/paritytech/contract-dependency-manager) |
+
+**When the user is missing either, install them — don't just fail.** The bundled
+installer does it in the right order and is idempotent:
+
+```sh
+./scripts/install-deploy-tools.sh
+```
+
+It installs **system deps → a Rust toolchain → both CLIs**. Order matters because
+both official installers build Rust components:
+
+- They need a **C toolchain (`cc`) + `make` + `curl`** present first
+  (`build-essential` on Debian/Ubuntu, `base-devel` on Arch, `gcc make` on
+  Fedora, Xcode CLT on macOS). Without `cc`, the Rust step **stalls on the linker
+  or rustup** — install the C toolchain *before* the CLI installers.
+- They install/extend a **`rustup`** toolchain; contract builds also need
+  `rustup component add rust-src` (see [Smart contracts](#smart-contracts)).
+- Installed binaries land in `~/.polkadot/bin` and `~/.cargo/bin` — open a fresh
+  shell (or re-source the profile) so they're on PATH.
+
+To install by hand instead, run the official one-liners (after the C toolchain):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/paritytech/playground-cli/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/paritytech/contract-dependency-manager/main/install.sh | bash
+```
+
+Check what's present: `command -v playground cdm`.
+
 ## Smart contracts
 
 If the app includes a smart contract (look for a `cdm.json` manifest and a Rust
@@ -166,10 +205,11 @@ app is frontend-only, ignore this section.
   everywhere with that handle (it's claimed first-come in the on-chain CDM
   registry). Find every occurrence with:
   `grep -rn "@your-username/leaderboard" --include="*.ts" --include="*.toml" --include="*.json" . | grep -v node_modules`.
-  Deploy and register the contract with **`playground contract deploy`** (and
-  **`playground contract i`** to install it) — recent playground CLIs bundle these
-  CDM workflows, so a standalone `cdm` binary is usually not needed. That writes
-  the real contract address, ABI, and metadata CID back into `cdm.json`.
+  Build, deploy, and register the contract with **`cdm deploy`** then **`cdm i`**
+  (or the bundled equivalents `playground contract deploy` / `playground contract
+  i`). That writes the real contract address, ABI, and metadata CID back into
+  `cdm.json`. Both need the deploy CLIs — see
+  [Deploy prerequisites](#deploy-prerequisites).
 - Manage contract dependencies with **CDM (Contract Dependency Manager,
   [paritytech/contract-dependency-manager](https://github.com/paritytech/contract-dependency-manager))**
   — the `@parity/cdm-*` toolchain and a `cdm.json` manifest — and build with

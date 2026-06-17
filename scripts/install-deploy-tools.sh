@@ -83,9 +83,13 @@ install_rust() {
 }
 
 # --- 3. the two CLIs ---------------------------------------------------------
+# Treat a CLI as installed only if it actually RUNS (`--version`), not merely
+# present on PATH — a half-installed or broken binary should be reinstalled.
+runs() { "$1" --version >/dev/null 2>&1; }
+
 install_playground() {
-  if have playground; then
-    log "playground present ($(playground --version 2>/dev/null || echo '?'))"
+  if runs playground; then
+    log "playground present ($(playground --version 2>/dev/null))"
   else
     log "installing Playground CLI"
     curl -fsSL https://raw.githubusercontent.com/paritytech/playground-cli/main/install.sh | bash \
@@ -94,8 +98,8 @@ install_playground() {
 }
 
 install_cdm() {
-  if have cdm; then
-    log "cdm present ($(cdm --version 2>/dev/null || echo '?'))"
+  if runs cdm; then
+    log "cdm present ($(cdm --version 2>/dev/null))"
   else
     log "installing CDM CLI"
     curl -fsSL https://raw.githubusercontent.com/paritytech/contract-dependency-manager/main/install.sh | bash \
@@ -111,6 +115,14 @@ install_cdm
 # --- summary -----------------------------------------------------------------
 export PATH="$HOME/.cargo/bin:$HOME/.polkadot/bin:$HOME/.local/bin:$PATH"
 log "summary (open a fresh shell if anything is still missing — installers update your PATH):"
-for t in curl cc make rustup cargo playground cdm; do
+for t in curl cc make rustup cargo; do
   if have "$t"; then printf '      ✓ %s\n' "$t"; else printf '      ✗ %s (still missing)\n' "$t"; fi
+done
+# The two CLIs must run, not just exist — verify with --version.
+for t in playground cdm; do
+  if v="$("$t" --version 2>/dev/null)"; then
+    printf '      ✓ %s (%s)\n' "$t" "$v"
+  else
+    printf '      ✗ %s (not runnable — "%s --version" failed)\n' "$t" "$t"
+  fi
 done

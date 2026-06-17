@@ -185,7 +185,9 @@ curl -fsSL https://raw.githubusercontent.com/paritytech/playground-cli/main/inst
 curl -fsSL https://raw.githubusercontent.com/paritytech/contract-dependency-manager/main/install.sh | bash
 ```
 
-Check what's present: `command -v playground cdm`.
+Check what's present **and runnable**: `command -v playground cdm`, then confirm
+each actually runs with `playground --version` and `cdm --version` — a binary on
+PATH can still be a broken/half-installed build that won't run.
 
 ## Smart contracts
 
